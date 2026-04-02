@@ -1,5 +1,5 @@
 #include <SDL.h>
-#include <SDL_ttf.h>
+
 #include <string>
 
 class Player {
@@ -36,7 +36,7 @@ int main() {
   SDL_Init(SDL_INIT_VIDEO);
 
   SDL_Window *window = SDL_CreateWindow("My Game", SDL_WINDOWPOS_CENTERED,
-                                        SDL_WINDOWPOS_CENTERED, 800, 600, 0);:
+                                        SDL_WINDOWPOS_CENTERED, 800, 600, 0);
 
   SDL_Renderer *renderer =
       SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
