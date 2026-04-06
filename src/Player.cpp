@@ -1,9 +1,9 @@
 #include "Player.h"
 
-void Player::update(
-    float dt) { // dt is the time between the last frame and the current
-                // frame multiplying dt with speed gives an equal movement
-                // speed regardless if the framerate of the computer
+void Player::update(float dt) {
+  // dt is the time between the last frame and the current
+  // frame multiplying dt with speed gives an equal movement
+  // speed regardless if the framerate of the computer
   const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
   if (keys[SDL_SCANCODE_W])
