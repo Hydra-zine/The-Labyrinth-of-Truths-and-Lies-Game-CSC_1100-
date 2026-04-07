@@ -10,10 +10,23 @@
 void roomSetup(int &level){
   if(level <= 5){
     //queue up dialgue + questions
+    //change npc colour
+    //change floor
+    level+=1;
   }
   else{
     //show win screen
   }
+}
+
+void checkAns(bool ans, int &lives){
+  //if(ans != question.ans){
+  //  lives-=1
+  //}
+  //
+  //if(lives <=0){
+  //  gameover()
+  //}
 }
 
 
@@ -50,6 +63,7 @@ int main() {
   Uint32 lastTime = SDL_GetTicks();
 
   int level = 1;
+  int lives = 3;
 
   while (running) { // actual game loop
 
