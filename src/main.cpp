@@ -5,6 +5,18 @@
 #include <SDL_keycode.h>
 #include <SDL_ttf.h>
 
+
+
+void roomSetup(int &level){
+  if(level <= 5){
+    //queue up dialgue + questions
+  }
+  else{
+    //show win screen
+  }
+}
+
+
 int main() {
   SDL_Init(SDL_INIT_VIDEO);
   TTF_Init();
@@ -37,6 +49,8 @@ int main() {
 
   Uint32 lastTime = SDL_GetTicks();
 
+  int level = 1;
+
   while (running) { // actual game loop
 
     Uint32 now = SDL_GetTicks();
@@ -53,6 +67,37 @@ int main() {
 
     player.update(dt);
     dialogue.update(dt);
+
+
+    //boundaries
+    if (!dialogue.active) {
+      if ((int)player.x + player.width/2 < 0) {
+        player.x = 760;
+        roomSetup(level);
+      }
+      else if ((int)player.x + player.width/2 > 800) {
+        player.x = 0;
+        roomSetup(level);
+      }
+    }
+    else{
+      if ((int)player.x < 0) {
+        player.x = 1;
+      }
+      else if ((int)player.x + player.width > 800) {
+        player.x = 800 - player.width - 1;
+      }
+    }
+    if((int)player.y < 0){
+      player.y = 1;
+    }
+    else if((int)player.y + player.height > 600) {
+      player.y = 600 - player.height - 1;
+    }
+
+
+
+
 
     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
     SDL_RenderClear(renderer);
