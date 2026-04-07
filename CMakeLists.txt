@@ -18,6 +18,8 @@ add_executable(maze
   src/DialogueBox.cpp
   src/NPC.h
   src/NPC.cpp
+  src/Sentry.h
+  src/Sentry.cpp
 )
 
 target_link_libraries(maze PRIVATE

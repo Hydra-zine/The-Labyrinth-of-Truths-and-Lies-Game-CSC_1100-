@@ -2,7 +2,7 @@
 #include <cstdlib>
 
 
-//not setting up srand((unsigned int)time(NULL)); here since in a class it would be called multiple times
+//not setting up srand((unsigned int)time(NULL)) here since in a class it would be called multiple times
 
 Sentry::Sentry(std::vector<std::string> questions) {
     questionSet = questions;

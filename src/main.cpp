@@ -1,29 +1,46 @@
 #include "DialogueBox.h"
 #include "NPC.h"
 #include "Player.h"
+#include "Sentry.h"
 #include <SDL.h>
 #include <SDL_events.h>
 #include <SDL_keycode.h>
 #include <SDL_ttf.h>
 
+struct Statement { //yes i know what structs are, structs are so op i feel like we shouldve learned them
+    std::string text;
+    bool isTrue;
+    std::string person; // whose fact it is
+};
 
 
-void roomSetup(int &level, NPC &npc){
-  if(level <= 5){
-    //queue up dialgue + questions
-    //change floor
-    level+=1;
+void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statement> &statements, Statement &currentStatement) {
+  if (level <= 5) {
+    int i = rand() % statements.size();
+    currentStatement = statements[i];
+
+    Sentry sentry({"Is this true or false?"}); 
+
+    bool sentryResponse = sentry.getResponse(currentStatement.isTrue);
+
+    dialogue.enqueue(currentStatement.person + " says: \"" + currentStatement.text + "\"");
+    if(sentryResponse) dialogue.enqueue("The sentry claims this is TRUE.");
+    else dialogue.enqueue("The sentry claims this is FALSE");
+    dialogue.enqueue("Head to the right if you think the sentry is right. Head to the left if you think it's wrong.");
+    dialogue.start();
+
+    level += 1;
     npc.setColour(level);
-  }
-  else{
-    //show win screen
+  } 
+  else {
+    // show win screen
   }
 }
 
-void checkAns(bool ans, int &lives){
-  //if(ans != question.ans){
-  //  lives-=1
-  //}
+void checkAns(bool guess, bool ans, int &lives){
+  if(guess != ans){
+    lives-=1;
+  }
   //
   //if(lives <=0){
   //  gameover()
@@ -42,17 +59,28 @@ int main() {
 
   TTF_Font *font =
       TTF_OpenFont("assets/fonts/BigBlueTerm437NerdFont-Regular.ttf", 18);
-  if (!font) {
-    SDL_Log("Failed to load font: %s", TTF_GetError());
-    return 1; // exit early with an error
-  }
+
+  std::vector<Statement> statements = {
+    {"I served in the Air Force for 6 years", true, "Timmy"},
+    {"I was a paramedic", true, "Timmy"},
+    {"I watch TV shows in my free time", true, "Mazed"},
+    {"I've lost 100+ pounds", true, "Mazed"},
+    {"I currently live in Canada", true, "Aayan"},
+    {"I've been coding for 7+ years", true, "Aayan"}
+    // your groupmates' facts go here too
+  };
+  Statement currentStatement;
 
   DialogueBox dialogue(font, 800, 600);
 
-  dialogue.enqueue("Testing testing");
-  dialogue.enqueue("No way this actually works");
-  dialogue.enqueue("Hi GitHub!!");
-  dialogue.start(); // had to implement start method to resst everything
+  dialogue.enqueue("Hi!");
+  dialogue.enqueue("Welcome to the P vs NP labyrinth!");
+  dialogue.enqueue("I'm an NPC designed to tell you statements about people.");
+  dialogue.enqueue("Be careful, I might be lying!");
+  dialogue.enqueue("If you think im lying, head to the left.If you think I'm telling the truth, then head to the right.");
+  dialogue.enqueue("Ready for the first question? Here it comes:");
+
+  dialogue.start(); // had to implement start method to reset everything
                     // properly
   bool running = true;
   SDL_Event e;
@@ -68,6 +96,9 @@ int main() {
 
   int level = 1;
   int lives = 3;
+
+  roomSetup(level, npc, dialogue, statements,currentStatement);
+
 
   while (running) { // actual game loop
 
@@ -91,11 +122,13 @@ int main() {
     if (!dialogue.active) {
       if ((int)player.x + player.width/2 < 0) {
         player.x = 760;
-        roomSetup(level, npc);
+        roomSetup(level, npc, dialogue, statements,currentStatement);
+
       }
       else if ((int)player.x + player.width/2 > 800) {
         player.x = 0;
-        roomSetup(level, npc);
+        roomSetup(level, npc, dialogue, statements,currentStatement);
+
       }
     }
     else{
@@ -119,9 +152,10 @@ int main() {
 
     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
     SDL_RenderClear(renderer);
-    player.render(renderer);
     npc.render(renderer);
+    player.render(renderer);
     dialogue.render(renderer);
+
     SDL_RenderPresent(renderer);
   }
 
