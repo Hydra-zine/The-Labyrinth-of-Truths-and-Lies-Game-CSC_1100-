@@ -5,7 +5,16 @@ DialogueBox::DialogueBox(TTF_Font *font, int screenW, int screenH) {
   this->font = font;
   this->box = {40, screenH - 120 - 40, screenW - 80, 120};
 }
-
+void DialogueBox::start() {
+  if (dialogue.empty())
+    return;
+  active = true;
+  fullText = dialogue.front();
+  dialogue.pop();
+  displayedText = "";
+  finished = false;
+  charTimer = 0.0f;
+}
 void DialogueBox::enqueue(const std::string &line) { dialogue.push(line); }
 
 void DialogueBox::advacne() {
@@ -37,15 +46,16 @@ void DialogueBox::update(float dt) {
 
   charTimer += dt; // give accurate seconds on how long its been active for
 
-  float charInterval = 1/this->charsPerSecond; 
-  //gives time in seconds till next char to appear
-  
-  while(charTimer >= charInterval && displayedText.size() < fullText.size()){
-    displayedText+=fullText[displayedText.size()]; //gets next char from full text
-    charTimer-=charInterval;
+  float charInterval = 1 / this->charsPerSecond;
+  // gives time in seconds till next char to appear
+
+  while (charTimer >= charInterval && displayedText.size() < fullText.size()) {
+    displayedText +=
+        fullText[displayedText.size()]; // gets next char from full text
+    charTimer -= charInterval;
   }
 
-  if(displayedText.size() >= fullText.size()){
+  if (displayedText.size() >= fullText.size()) {
     finished = true;
   }
 }

@@ -32,6 +32,7 @@ public:
 
   DialogueBox(TTF_Font *font, int screenW, int screenH);
 
+  void start();
   void enqueue(const std::string &line);
   void advacne();
 

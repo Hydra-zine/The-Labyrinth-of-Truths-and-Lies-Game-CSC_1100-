@@ -8,24 +8,26 @@
 int main() {
   SDL_Init(SDL_INIT_VIDEO);
   TTF_Init();
-  SDL_Window *window = SDL_CreateWindow("My Game", SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+  SDL_Window *window = SDL_CreateWindow("My Game", SDL_WINDOWPOS_CENTERED,
+                                        SDL_WINDOWPOS_CENTERED, 800, 600, 0);
 
-  SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-  
+  SDL_Renderer *renderer =
+      SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-  TTF_Font* font = TTF_OpenFont("assets/fonts/BigBlueTerm437NerdFont-Regular.ttf", 18);
+  TTF_Font *font =
+      TTF_OpenFont("assets/fonts/BigBlueTerm437NerdFont-Regular.ttf", 18);
   if (!font) {
     SDL_Log("Failed to load font: %s", TTF_GetError());
     return 1; // exit early with an error
   }
-  
+
   DialogueBox dialogue(font, 800, 600);
 
   dialogue.enqueue("Testing testing");
   dialogue.enqueue("No way this actually works");
   dialogue.enqueue("Hi GitHub!!");
-  dialogue.advacne();
-
+  dialogue.start(); // had to implement start method to resst everything
+                    // properly
   bool running = true;
   SDL_Event e;
 
@@ -45,7 +47,7 @@ int main() {
     while (SDL_PollEvent(&e)) {
       if (e.type == SDL_QUIT)
         running = false;
-      if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE)
+      if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE)
         dialogue.advacne();
     }
 
