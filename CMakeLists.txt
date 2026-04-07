@@ -16,6 +16,8 @@ add_executable(maze
   src/Player.cpp
   src/DialogueBox.h
   src/DialogueBox.cpp
+  src/NPC.h
+  src/NPC.cpp
 )
 
 target_link_libraries(maze PRIVATE

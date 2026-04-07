@@ -1,4 +1,5 @@
 #include "DialogueBox.h"
+#include "NPC.h"
 #include "Player.h"
 #include <SDL.h>
 #include <SDL_events.h>
@@ -7,12 +8,12 @@
 
 
 
-void roomSetup(int &level){
+void roomSetup(int &level, NPC &npc){
   if(level <= 5){
     //queue up dialgue + questions
-    //change npc colour
     //change floor
     level+=1;
+    npc.setColour(level);
   }
   else{
     //show win screen
@@ -57,8 +58,11 @@ int main() {
   SDL_Event e;
 
   Player player;
+  NPC npc;
   player.x = 300;
   player.y = 200;
+  npc.x = 350;
+  npc.y = 100;
 
   Uint32 lastTime = SDL_GetTicks();
 
@@ -87,11 +91,11 @@ int main() {
     if (!dialogue.active) {
       if ((int)player.x + player.width/2 < 0) {
         player.x = 760;
-        roomSetup(level);
+        roomSetup(level, npc);
       }
       else if ((int)player.x + player.width/2 > 800) {
         player.x = 0;
-        roomSetup(level);
+        roomSetup(level, npc);
       }
     }
     else{
@@ -116,6 +120,7 @@ int main() {
     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
     SDL_RenderClear(renderer);
     player.render(renderer);
+    npc.render(renderer);
     dialogue.render(renderer);
     SDL_RenderPresent(renderer);
   }
