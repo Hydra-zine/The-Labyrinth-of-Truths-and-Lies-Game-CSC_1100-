@@ -18,7 +18,7 @@ void Player::update(float dt) {
 
 void Player::render(SDL_Renderer *renderer) {
 
-  SDL_Rect rect = {(int)x, (int)y, 50, 50};
+  SDL_Rect rect = {(int)x, (int)y, width, height};
   SDL_SetRenderDrawColor(renderer, 100, 180, 255, 255);
   SDL_RenderFillRect(renderer, &rect);
 }
