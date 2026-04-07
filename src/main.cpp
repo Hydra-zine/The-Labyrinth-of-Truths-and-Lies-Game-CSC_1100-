@@ -37,14 +37,13 @@ void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statemen
   }
 }
 
-void checkAns(bool guess, bool ans, int &lives){
-  if(guess != ans){
-    lives-=1;
+void checkAns(bool playerGuess, Statement &currentStatement, int &lives, bool &running) {
+  if (playerGuess != currentStatement.isTrue) {
+    lives -= 1;
+    if (lives <= 0) {
+      running = false; // trigger game over
+    }
   }
-  //
-  //if(lives <=0){
-  //  gameover()
-  //}
 }
 
 
@@ -75,10 +74,11 @@ int main() {
 
   dialogue.enqueue("Hi!");
   dialogue.enqueue("Welcome to the P vs NP labyrinth!");
-  dialogue.enqueue("I'm an NPC designed to tell you statements about people.");
-  dialogue.enqueue("Be careful, I might be lying!");
-  dialogue.enqueue("If you think im lying, head to the left.If you think I'm telling the truth, then head to the right.");
-  dialogue.enqueue("Ready for the first question? Here it comes:");
+  dialogue.enqueue("Your goal is to escape the dungeon alive by going the right way.");
+  dialogue.enqueue("There are sentries in every room that tell you if a statement is true or not.");
+  dialogue.enqueue("The key to escaping is figuring out if they're telling the turth or not.");
+  dialogue.enqueue("If you think the sentry is lying, head to the left.If you think the sentry is telling the truth, then head to the right.");
+  dialogue.enqueue("Ready for the first statement? Here it comes:");
 
   dialogue.start(); // had to implement start method to reset everything
                     // properly
@@ -122,11 +122,13 @@ int main() {
     if (!dialogue.active) {
       if ((int)player.x + player.width/2 < 0) {
         player.x = 760;
+        checkAns(false, currentStatement, lives, running);
         roomSetup(level, npc, dialogue, statements,currentStatement);
 
       }
       else if ((int)player.x + player.width/2 > 800) {
         player.x = 0;
+        checkAns(true, currentStatement, lives, running);
         roomSetup(level, npc, dialogue, statements,currentStatement);
 
       }
