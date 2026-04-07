@@ -37,11 +37,11 @@ void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statemen
   }
 }
 
-void checkAns(bool playerGuess, Statement &currentStatement, int &lives, bool &running) {
+void checkAns(bool playerGuess, Statement &currentStatement, int &lives, bool &playing) {
   if (playerGuess != currentStatement.isTrue) {
     lives -= 1;
     if (lives <= 0) {
-      running = false; // trigger game over
+      playing = false; // trigger game over
     }
   }
 }
@@ -83,6 +83,7 @@ int main() {
   dialogue.start(); // had to implement start method to reset everything
                     // properly
   bool running = true;
+  bool playing = true;
   SDL_Event e;
 
   Player player;
@@ -122,13 +123,13 @@ int main() {
     if (!dialogue.active) {
       if ((int)player.x + player.width/2 < 0) {
         player.x = 760;
-        checkAns(false, currentStatement, lives, running);
+        checkAns(false, currentStatement, lives, playing);
         roomSetup(level, npc, dialogue, statements,currentStatement);
 
       }
       else if ((int)player.x + player.width/2 > 800) {
         player.x = 0;
-        checkAns(true, currentStatement, lives, running);
+        checkAns(true, currentStatement, lives, playing);
         roomSetup(level, npc, dialogue, statements,currentStatement);
 
       }
@@ -149,15 +150,25 @@ int main() {
     }
 
 
-
-
-
     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
     SDL_RenderClear(renderer);
-    npc.render(renderer);
-    player.render(renderer);
-    dialogue.render(renderer);
+    if(playing){
+      npc.render(renderer);
+      player.render(renderer);
+      dialogue.render(renderer);
+    }
+    else{
+      if(level > 5){
+        //win screen
+      }
+      else if(lives <= 0){
+        //gameover screen
+      }
 
+      else{
+        running = false; //error i guess
+      }
+    }
     SDL_RenderPresent(renderer);
   }
 
