@@ -14,7 +14,7 @@ struct Statement { //yes i know what structs are, structs are so op i feel like 
 };
 
 
-void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statement> &statements, Statement &currentStatement) {
+void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statement> &statements, Statement &currentStatement, bool &playing) {
   if (level <= 5) {
     int i = rand() % statements.size();
     currentStatement = statements[i];
@@ -33,7 +33,7 @@ void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statemen
     npc.setColour(level);
   } 
   else {
-    // show win screen
+    playing = false;
   }
 }
 
@@ -44,6 +44,76 @@ void checkAns(bool playerGuess, Statement &currentStatement, int &lives, bool &p
       playing = false; // trigger game over
     }
   }
+}
+
+void renderEndScreen(SDL_Renderer* renderer, TTF_Font* font, bool won) {
+  // Background color — green tint for win, red tint for lose
+  if (won)
+    SDL_SetRenderDrawColor(renderer, 20, 60, 20, 255);
+  else
+    SDL_SetRenderDrawColor(renderer, 60, 20, 20, 255);
+  SDL_RenderClear(renderer);
+
+    // Main message
+    //
+  std::string message;
+  if (won) message = "You Win!";
+  else message = "You Lose!";
+
+  SDL_Color white = {255, 255, 255, 255};
+
+  SDL_Surface* surface = TTF_RenderText_Blended(font, message.c_str(), white);
+  if (surface) {
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    // centers message on screen
+
+    SDL_Rect dst = {
+    (800 - surface->w) / 2,
+    (600 - surface->h) / 2 - 40,
+    surface->w, surface->h
+    };
+
+    SDL_RenderCopy(renderer, texture, NULL, &dst);
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+  }
+
+    // Subtitle
+  std::string subtitle;
+  if(won) subtitle = "You escaped the labyrinth!";
+  else subtitle = "You ran out of lives...";
+
+  SDL_Surface* subSurface = TTF_RenderText_Blended(font, subtitle.c_str(), white);
+  if (subSurface) {
+    SDL_Texture* subTex = SDL_CreateTextureFromSurface(renderer, subSurface);
+
+    SDL_Rect dst = {
+    (800 - subSurface->w) / 2,
+    (600 - subSurface->h) / 2 + 20,
+    subSurface->w, subSurface->h
+    };
+
+    SDL_RenderCopy(renderer, subTex, NULL, &dst);
+    SDL_DestroyTexture(subTex);
+    SDL_FreeSurface(subSurface);
+  }
+  // restart text
+  SDL_Color grey = {150, 150, 150, 255};
+  SDL_Surface* quit = TTF_RenderText_Blended(font, "Press R to restart", grey);
+  if (quit) {
+    SDL_Texture* qTex = SDL_CreateTextureFromSurface(renderer, quit);
+    SDL_Rect dst = {
+      (800 - quit->w) / 2,
+      500,
+      quit->w, quit->h
+      };
+    SDL_RenderCopy(renderer, qTex, NULL, &dst);
+    SDL_DestroyTexture(qTex);
+    SDL_FreeSurface(quit);
+  }
+
+  SDL_RenderPresent(renderer);
 }
 
 
@@ -66,7 +136,6 @@ int main() {
     {"I've lost 100+ pounds", true, "Mazed"},
     {"I currently live in Canada", true, "Aayan"},
     {"I've been coding for 7+ years", true, "Aayan"}
-    // your groupmates' facts go here too
   };
   Statement currentStatement;
 
@@ -98,7 +167,7 @@ int main() {
   int level = 1;
   int lives = 3;
 
-  roomSetup(level, npc, dialogue, statements,currentStatement);
+  roomSetup(level, npc, dialogue, statements,currentStatement, playing);
 
 
   while (running) { // actual game loop
@@ -124,13 +193,13 @@ int main() {
       if ((int)player.x + player.width/2 < 0) {
         player.x = 760;
         checkAns(false, currentStatement, lives, playing);
-        roomSetup(level, npc, dialogue, statements,currentStatement);
+        roomSetup(level, npc, dialogue, statements,currentStatement, playing);
 
       }
       else if ((int)player.x + player.width/2 > 800) {
         player.x = 0;
         checkAns(true, currentStatement, lives, playing);
-        roomSetup(level, npc, dialogue, statements,currentStatement);
+        roomSetup(level, npc, dialogue, statements,currentStatement, playing);
 
       }
     }
@@ -150,26 +219,18 @@ int main() {
     }
 
 
-    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
-    SDL_RenderClear(renderer);
-    if(playing){
+
+    if (playing) {
+      SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
+      SDL_RenderClear(renderer);
       npc.render(renderer);
       player.render(renderer);
       dialogue.render(renderer);
+      SDL_RenderPresent(renderer);
+    } 
+    else {
+      renderEndScreen(renderer, font, level > 5);
     }
-    else{
-      if(level > 5){
-        //win screen
-      }
-      else if(lives <= 0){
-        //gameover screen
-      }
-
-      else{
-        running = false; //error i guess
-      }
-    }
-    SDL_RenderPresent(renderer);
   }
 
   SDL_DestroyRenderer(renderer);
