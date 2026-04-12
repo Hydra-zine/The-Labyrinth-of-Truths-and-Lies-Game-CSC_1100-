@@ -60,30 +60,22 @@ void DialogueBox::update(float dt) {
   }
 }
 
-// I USED CHATGPT FOR THIS FUNCTION TO FORMAT MY TEXTBOX BETTER, THIS ELIMATES
-// THE TEDIOUSNESS OF SPENDING HOURS GETTING EVERYTHING IN THE RIGHT PLACE
-// MAKING IT LOOK GOOD . THIS ISNT MY CODE. EVRYTHING ELSE IS THO.
 void DialogueBox::render(SDL_Renderer *renderer) {
   if (!active)
     return;
 
-  // Draw box background
   SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-  SDL_SetRenderDrawColor(renderer, boxColor.r, boxColor.g, boxColor.b,
-                         boxColor.a);
+
+  SDL_SetRenderDrawColor(renderer, boxColor.r, boxColor.g, boxColor.b, boxColor.a);
   SDL_RenderFillRect(renderer, &box);
 
-  // Draw border
-  SDL_SetRenderDrawColor(renderer, borderColor.r, borderColor.g, borderColor.b,
-                         borderColor.a);
+  SDL_SetRenderDrawColor(renderer, borderColor.r, borderColor.g, borderColor.b, borderColor.a);
   SDL_RenderDrawRect(renderer, &box);
 
-  // Render text
   if (!displayedText.empty()) {
     SDL_Surface *surface =
-        TTF_RenderText_Blended_Wrapped(font, displayedText.c_str(), textColor,
-                                       box.w - padding * 2 // wrap width
-        );
+        TTF_RenderText_Blended_Wrapped(font, displayedText.c_str(), textColor, box.w - padding * 2);
+
     if (surface) {
       SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
       SDL_Rect dst = {box.x + padding, box.y + padding, surface->w, surface->h};
@@ -93,7 +85,6 @@ void DialogueBox::render(SDL_Renderer *renderer) {
     }
   }
 
-  // Draw "press space" prompt when text is done
   if (finished && font) {
     SDL_Surface *prompt =
         TTF_RenderText_Blended(font, "[ SPACE ]", {150, 150, 150, 255});
