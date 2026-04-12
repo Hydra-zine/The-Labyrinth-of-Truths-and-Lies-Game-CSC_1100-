@@ -123,6 +123,27 @@ void renderEndScreen(SDL_Renderer* renderer, TTF_Font* font, bool won) {
 }
 
 
+void resetGame(Player &player, NPC &npc, DialogueBox &dialogue, std::vector<Statement> &allStatements,
+               std::vector<Statement> &activeStatements, Statement &currentStatement, int &level,
+               int &lives, bool &playing) 
+{
+
+    level = 1;
+    lives = 3;
+    playing = true;
+
+    activeStatements = allStatements;
+
+    player.x = 300;
+    player.y = 200;
+
+    dialogue.enqueue("Hi!");
+    dialogue.enqueue("Welcome to the P vs NP labyrinth!");
+    dialogue.enqueue("Head right if you think the statement is true. Head left if false.");
+    dialogue.start();
+}
+
+
 void renderHUD(SDL_Renderer *renderer, TTF_Font* font, int lives, int level){
 
 
@@ -176,7 +197,7 @@ int main() {
   TTF_Font *font =
       TTF_OpenFont("assets/fonts/BigBlueTerm437NerdFont-Regular.ttf", 18);
 
-  std::vector<Statement> statements = {
+  std::vector<Statement> allStatements = {
     //Timmy - true
     {"I served in the Air Force for 6 years", true, "Timmy"},
     {"I was a paramedic", true, "Timmy"},
@@ -207,6 +228,8 @@ int main() {
     {"Isaac was in a drumline", true, "Isaac"}
 
   };
+
+  std::vector<Statement> statements = allStatements;
 
   Statement currentStatement;
 
@@ -251,8 +274,13 @@ int main() {
     while (SDL_PollEvent(&e)) {
       if (e.type == SDL_QUIT)
         running = false;
-      if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE)
-        dialogue.advacne();
+      if(e.type == SDL_KEYDOWN){
+        SDL_Keycode key = e.key.keysym.sym;
+        if (key == SDLK_SPACE) dialogue.advacne();
+        else if (!playing && key == SDLK_r) resetGame(player, npc, dialogue, allStatements,
+            statements, currentStatement, level, lives,playing);
+
+      }
     }
 
     player.update(dt);
