@@ -187,7 +187,7 @@ void renderHUD(SDL_Renderer *renderer, TTF_Font* font, int lives, int level){
   }
 }
 
-int main() {
+int main(int argv, char** args) {
   SDL_Init(SDL_INIT_VIDEO);
   TTF_Init();
   SDL_Window *window = SDL_CreateWindow("My Game", SDL_WINDOWPOS_CENTERED,
