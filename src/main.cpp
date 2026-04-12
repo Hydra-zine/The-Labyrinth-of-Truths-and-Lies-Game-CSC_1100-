@@ -11,14 +11,14 @@
 #include <SDL_ttf.h>
 #include <string>
 
-struct Statement { //yes i know what structs are, structs are so op i feel like we shouldve learned them
+struct Statement { //yes i know what structs are
     std::string text;
     bool isTrue;
     std::string person; // whose fact it is
 };
 
 
-void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statement> &statements, Statement &currentStatement, bool &playing) {
+void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statement> &statements, Statement &currentStatement, bool &playing, bool &won) {
   if (level < 5) {
     int i = rand() % statements.size();
     currentStatement = statements[i];
@@ -39,14 +39,16 @@ void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statemen
     npc.setColour(level);
   } 
   else {
+    won = true;
     playing = false;
   }
 }
 
-void checkAns(bool playerGuess, Statement &currentStatement, int &lives, bool &playing) {
+void checkAns(bool playerGuess, Statement &currentStatement, int &lives, bool &playing, bool &won) {
   if (playerGuess != currentStatement.isTrue) {
     lives -= 1;
     if (lives <= 0) {
+      won = false;
       playing = false; // trigger game over
     }
   }
@@ -85,7 +87,6 @@ void renderEndScreen(SDL_Renderer* renderer, TTF_Font* font, bool won) {
     SDL_FreeSurface(surface);
   }
 
-    // Subtitle
   std::string subtitle;
   if(won) subtitle = "You escaped the labyrinth!";
   else subtitle = "You ran out of lives...";
@@ -125,12 +126,13 @@ void renderEndScreen(SDL_Renderer* renderer, TTF_Font* font, bool won) {
 
 void resetGame(Player &player, NPC &npc, DialogueBox &dialogue, std::vector<Statement> &allStatements,
                std::vector<Statement> &activeStatements, Statement &currentStatement, int &level,
-               int &lives, bool &playing) 
+               int &lives, bool &playing, bool &introFinished) 
 {
 
-    level = 1;
+    level = 0;
     lives = 3;
     playing = true;
+    introFinished = false;
 
     activeStatements = allStatements;
 
@@ -138,7 +140,6 @@ void resetGame(Player &player, NPC &npc, DialogueBox &dialogue, std::vector<Stat
     player.y = 200;
 
     dialogue.empty();
-
     dialogue.enqueue("Hi!");
     dialogue.enqueue("Welcome to the P vs NP labyrinth!");
     dialogue.enqueue("Head right if you think the statement is true. Head left if false.");
@@ -211,7 +212,7 @@ int main(int argv, char** args) {
     {"I watch TV shows in my free time", true, "Mazed"},
     {"I've lost 100+ pounds", true, "Mazed"},
     // Mazed — false
-    {"I have been to every continent", false, "Mazed"},
+    {"I've been to every continent", false, "Mazed"},
     {"I once met a celebrity", false, "Mazed"},
 
     // Aayan — true
@@ -226,8 +227,8 @@ int main(int argv, char** args) {
     {"I've played video games since I was 5", true, "William"},
 
     // Isaac - true
-    {"Isaac went to Japan", true, "Isaac"},
-    {"Isaac was in a drumline", true, "Isaac"}
+    {"I've been to Japan", true, "Isaac"},
+    {"I was in a drumline", true, "Isaac"}
 
   };
 
@@ -241,7 +242,7 @@ int main(int argv, char** args) {
   dialogue.enqueue("Welcome to the P vs NP labyrinth!");
   dialogue.enqueue("Your goal is to escape the dungeon alive by going the right way.");
   dialogue.enqueue("There are sentries in every room that tell you if a statement is true or not.");
-  dialogue.enqueue("The key to escaping is figuring out if they're telling the turth or not.");
+  dialogue.enqueue("The key to escaping is figuring out if they're telling the truth or not.");
   dialogue.enqueue("If you think the sentry is lying, head to the left.If you think the sentry is telling the truth, then head to the right.");
   dialogue.enqueue("Ready for the first statement? Here it comes:");
 
@@ -249,6 +250,8 @@ int main(int argv, char** args) {
                     // properly
   bool running = true;
   bool playing = true;
+  bool introFinished = false;
+  bool won = false;
   SDL_Event e;
 
   Player player;
@@ -263,7 +266,6 @@ int main(int argv, char** args) {
   int level = 0;
   int lives = 3;
 
-  roomSetup(level, npc, dialogue, statements,currentStatement, playing);
 
 
   while (running) { // actual game loop
@@ -278,9 +280,9 @@ int main(int argv, char** args) {
         running = false;
       if(e.type == SDL_KEYDOWN){
         SDL_Keycode key = e.key.keysym.sym;
-        if (key == SDLK_SPACE) dialogue.advacne();
+        if (key == SDLK_SPACE) dialogue.advance();
         else if (!playing && key == SDLK_r) resetGame(player, npc, dialogue, allStatements,
-            statements, currentStatement, level, lives,playing);
+            statements, currentStatement, level, lives,playing, introFinished);
 
       }
     }
@@ -291,16 +293,20 @@ int main(int argv, char** args) {
 
     //boundaries
     if (!dialogue.active) {
+      if(!introFinished){
+        introFinished = true;
+        roomSetup(level, npc, dialogue, statements,currentStatement, playing, won);
+      }
       if ((int)player.x + player.width/2 < 0) {
         player.x = 760;
-        checkAns(false, currentStatement, lives, playing);
-        roomSetup(level, npc, dialogue, statements,currentStatement, playing);
+        checkAns(false, currentStatement, lives, playing, won);
+        roomSetup(level, npc, dialogue, statements,currentStatement, playing, won);
 
       }
       else if ((int)player.x + player.width/2 > 800) {
         player.x = 0;
-        checkAns(true, currentStatement, lives, playing);
-        roomSetup(level, npc, dialogue, statements,currentStatement, playing);
+        checkAns(true, currentStatement, lives, playing, won);
+        roomSetup(level, npc, dialogue, statements,currentStatement, playing, won);
 
       }
     }
@@ -331,7 +337,7 @@ int main(int argv, char** args) {
       SDL_RenderPresent(renderer);
     } 
     else {
-      renderEndScreen(renderer, font, level > 5);
+      renderEndScreen(renderer, font, won);
     }
   }
 
