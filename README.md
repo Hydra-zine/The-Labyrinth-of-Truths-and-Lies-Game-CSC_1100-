@@ -1,7 +1,7 @@
 # The Labyrinth of Truths and Lies
 A GUI-based maze game built in C++ with SDL2 for CSC 1100.
  
-Navigate through the labyrinth by determining whether statements made by sentries are true or false. Watch out — sentries may not always be telling the truth!
+Navigate through the labyrinth by determining whether statements made by sentries are true or false. Watch out, sentries may not always be telling the truth!
  
 ---
  
@@ -17,7 +17,7 @@ Navigate through the labyrinth by determining whether statements made by sentrie
  
 ## Built With
 - C++17
-- [SDL2](https://www.libsdl.org/) — window, rendering, and input
+- [SDL2](https://www.libsdl.org/) - window, rendering, and input
 - [SDL2_ttf](https://wiki.libsdl.org/SDL2_ttf/FrontPage) — font rendering
 - CMake — cross-platform build system
  
