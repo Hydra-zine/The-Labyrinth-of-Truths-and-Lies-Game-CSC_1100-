@@ -19,14 +19,16 @@ void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statemen
     int i = rand() % statements.size();
     currentStatement = statements[i];
 
+    statements.erase(statements.begin() + i);
+
     Sentry sentry({"Is this true or false?"}); 
 
     bool sentryResponse = sentry.getResponse(currentStatement.isTrue);
 
+    dialogue.enqueue("This sentry claims the following: ");
+
     dialogue.enqueue(currentStatement.person + " says: \"" + currentStatement.text + "\"");
-    if(sentryResponse) dialogue.enqueue("The sentry claims this is TRUE.");
-    else dialogue.enqueue("The sentry claims this is FALSE");
-    dialogue.enqueue("Head to the right if you think the sentry is right. Head to the left if you think it's wrong.");
+    dialogue.enqueue("Head right if you think the sentry is correct. Head left if you think it's wrong.");
     dialogue.start();
 
     level += 1;
@@ -130,13 +132,37 @@ int main() {
       TTF_OpenFont("assets/fonts/BigBlueTerm437NerdFont-Regular.ttf", 18);
 
   std::vector<Statement> statements = {
+    //Timmy - true
     {"I served in the Air Force for 6 years", true, "Timmy"},
     {"I was a paramedic", true, "Timmy"},
+    // Timmy — false
+    {"I have a pilot's license", false, "Timmy"},
+    {"I have never broken a bone", false, "Timmy"},
+
+    // Mazed — true
     {"I watch TV shows in my free time", true, "Mazed"},
     {"I've lost 100+ pounds", true, "Mazed"},
+    // Mazed — false
+    {"I have been to every continent", false, "Mazed"},
+    {"I once met a celebrity", false, "Mazed"},
+
+    // Aayan — true
     {"I currently live in Canada", true, "Aayan"},
-    {"I've been coding for 7+ years", true, "Aayan"}
+    {"I've been coding for 7+ years", true, "Aayan"},
+    // Aayan — false
+    {"I can speak five languages fluently", false, "Aayan"},
+    {"I have never watched anime", false, "Aayan"},
+
+    // William - true;
+    {"I like fashion", true, "William"},
+    {"I've played video games since I was 5", true, "William"},
+
+    // Isaac - true
+    {"Isaac went to Japan", true, "Isaac"},
+    {"Isaac was in a drumline", true, "Isaac"}
+
   };
+
   Statement currentStatement;
 
   DialogueBox dialogue(font, 800, 600);
