@@ -69,5 +69,5 @@ Testing/
 .cache/
 
 # Other
-compile_flags.txt
+# compile_flags.txt
 .DS_Store
