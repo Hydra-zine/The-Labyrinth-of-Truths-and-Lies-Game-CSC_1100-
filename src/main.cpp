@@ -5,7 +5,11 @@
 #include <SDL.h>
 #include <SDL_events.h>
 #include <SDL_keycode.h>
+#include <SDL_rect.h>
+#include <SDL_render.h>
+#include <SDL_surface.h>
 #include <SDL_ttf.h>
+#include <string>
 
 struct Statement { //yes i know what structs are, structs are so op i feel like we shouldve learned them
     std::string text;
@@ -15,7 +19,7 @@ struct Statement { //yes i know what structs are, structs are so op i feel like 
 
 
 void roomSetup(int &level, NPC &npc, DialogueBox &dialogue, std::vector<Statement> &statements, Statement &currentStatement, bool &playing) {
-  if (level <= 5) {
+  if (level < 5) {
     int i = rand() % statements.size();
     currentStatement = statements[i];
 
@@ -119,6 +123,47 @@ void renderEndScreen(SDL_Renderer* renderer, TTF_Font* font, bool won) {
 }
 
 
+void renderHUD(SDL_Renderer *renderer, TTF_Font* font, int lives, int level){
+
+
+  //rendering lives on top right
+
+  SDL_Color white = {255, 255, 255, 255};
+  SDL_Color red = {220, 30, 30, 255};
+
+  std::string livesText = "Lives: " + std::to_string(lives);
+  SDL_Surface *livesSurface = TTF_RenderText_Blended(font, livesText.c_str(), red);
+
+  if(livesSurface){
+    SDL_Texture *livesTexture = SDL_CreateTextureFromSurface(renderer, livesSurface);
+    SDL_Rect dst = {
+      800 - livesSurface -> w - 16, //padding
+      16,
+      livesSurface -> w, livesSurface -> h
+    };
+    SDL_RenderCopy(renderer, livesTexture, NULL, &dst);
+    SDL_DestroyTexture(livesTexture);
+    SDL_FreeSurface(livesSurface);
+  }
+
+  //rendering level on top left
+
+  std::string levelText = "Room: " + std::to_string(level);
+  SDL_Surface* levelSurface = TTF_RenderText_Blended(font, levelText.c_str(), white);
+
+  if(levelSurface){
+    SDL_Texture *levelTexture = SDL_CreateTextureFromSurface(renderer, levelSurface);
+    SDL_Rect dst = {
+      16, 
+      16, 
+      levelSurface -> w, levelSurface -> h
+    };
+    SDL_RenderCopy(renderer, levelTexture, NULL, &dst);
+    SDL_DestroyTexture(levelTexture);
+    SDL_FreeSurface(levelSurface);
+  }
+}
+
 int main() {
   SDL_Init(SDL_INIT_VIDEO);
   TTF_Init();
@@ -190,7 +235,7 @@ int main() {
 
   Uint32 lastTime = SDL_GetTicks();
 
-  int level = 1;
+  int level = 0;
   int lives = 3;
 
   roomSetup(level, npc, dialogue, statements,currentStatement, playing);
@@ -252,6 +297,7 @@ int main() {
       npc.render(renderer);
       player.render(renderer);
       dialogue.render(renderer);
+      renderHUD(renderer, font, lives, level);
       SDL_RenderPresent(renderer);
     } 
     else {
