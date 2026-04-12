@@ -34,7 +34,7 @@ public:
 
   void start();
   void enqueue(const std::string &line);
-  void advacne();
+  void advance();
   void empty();
 
   void update(float dt);

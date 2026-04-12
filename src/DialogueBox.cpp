@@ -17,7 +17,7 @@ void DialogueBox::start() {
 }
 void DialogueBox::enqueue(const std::string &line) { dialogue.push(line); }
 
-void DialogueBox::advacne() {
+void DialogueBox::advance() {
   if (!active)
     active = true; // opens dialogue dialogue box
 
