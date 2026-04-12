@@ -137,6 +137,8 @@ void resetGame(Player &player, NPC &npc, DialogueBox &dialogue, std::vector<Stat
     player.x = 300;
     player.y = 200;
 
+    dialogue.empty();
+
     dialogue.enqueue("Hi!");
     dialogue.enqueue("Welcome to the P vs NP labyrinth!");
     dialogue.enqueue("Head right if you think the statement is true. Head left if false.");
