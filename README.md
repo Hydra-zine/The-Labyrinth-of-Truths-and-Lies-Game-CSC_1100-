@@ -32,8 +32,8 @@ Just unzip and double click `maze.exe` — no installs needed.
 ### Mac
 ```bash
 brew install sdl2 sdl2_ttf
-git clone [YOUR REPO LINK HERE]
-cd [YOUR REPO NAME]
+git clone https://github.com/Hydra-zine/The-Labyrinth-of-Truths-and-Lies-Game-CSC_1100-
+cd The-Labyrinth-of-Truths-and-Lies-Game-CSC_1100-
 mkdir build && cd build
 cmake ..
 make
@@ -43,8 +43,8 @@ make
 ### Linux
 ```bash
 sudo apt install libsdl2-dev libsdl2-ttf-dev
-git clone [YOUR REPO LINK HERE]
-cd [YOUR REPO NAME]
+git clone https://github.com/Hydra-zine/The-Labyrinth-of-Truths-and-Lies-Game-CSC_1100-
+cd The-Labyrinth-of-Truths-and-Lies-Game-CSC_1100-
 mkdir build && cd build
 cmake ..
 make
