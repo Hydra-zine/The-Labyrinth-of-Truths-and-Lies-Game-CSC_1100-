@@ -40,6 +40,13 @@ void DialogueBox::advacne() {
   }
 }
 
+void DialogueBox::empty(){
+  while (!dialogue.empty()) {
+    dialogue.pop();
+}
+
+}
+
 void DialogueBox::update(float dt) {
   if (!active || finished)
     return; // no need to update

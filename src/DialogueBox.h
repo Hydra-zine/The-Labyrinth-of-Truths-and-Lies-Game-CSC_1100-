@@ -35,6 +35,7 @@ public:
   void start();
   void enqueue(const std::string &line);
   void advacne();
+  void empty();
 
   void update(float dt);
   void render(SDL_Renderer *renderer);
