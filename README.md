@@ -27,7 +27,7 @@ Navigate through the labyrinth by determining whether statements made by sentrie
  
 ### Windows
 A prebuilt `.exe` is available in the [Releases](../../releases) section.
-Just unzip and double click `maze.exe` — no installs needed.
+Just unzip and double click `maze.exe`.
  
 ### Mac
 ```bash
